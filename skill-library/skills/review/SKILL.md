@@ -13,9 +13,9 @@ The goal is a ship decision, not a list of comments. A change with nothing wrong
 ## 1. Set up
 
 1. Find the scope. A PR number: `gh pr view <n> --json title,body,headRefName,baseRefName,files,commits`. A branch or a fixed point the user names: diff it against that point. Nothing named: the current branch against its base branch.
-2. `git fetch` the head and base refs. Diff against the PR's own base, not the default branch. A stacked PR targets another feature branch: `git diff origin/<base>...origin/<head>`.
+2. `git fetch` the head and base refs. Diff against the PR's own base, not the default branch. A stacked PR targets another feature branch: `git diff origin/<base>...origin/<head>`. If the head branch is gone, for example after a merge, fetch `pull/<n>/head` and diff from the merge base with the base branch at the PR's first commit.
 3. Check that the diff is not empty and the refs resolve. Fail here, not inside the subagents.
-4. Check the PR head out as a detached worktree: `git worktree add --detach <tmp>/review-<n> origin/<head>`. Read new files in full from there, not from diff hunks. You need real line numbers. Remove the worktree when you are done.
+4. Check the PR head out as a detached worktree: `git worktree add --detach <tmp>/review-<n> origin/<head>`. Read new files in full from there, not from diff hunks. You need real line numbers. Remove the worktree when you are done. If you cannot create a worktree, for example in plan mode, read each file with `git show <head-sha>:<path>`.
 5. Get the ticket. `docs/agents/tracker.md` says where tickets live. The branch name or PR body usually holds the ticket ID. Read its scope and acceptance criteria. Read the sibling tickets it links to. They often state behavior the ticket leaves implicit.
 6. Read `docs/agents/review.md` if it exists. It lists the paths a person reads themselves, and it can add project checks or a third reviewer, for example a parity check against a legacy system. Follow it. The format is in [references/review-md.md](references/review-md.md).
 7. If the project numbers migrations or other ordered files, check the numbers against the default branch, whatever the base. A stacked PR collides there.
