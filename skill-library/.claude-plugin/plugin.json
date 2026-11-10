@@ -1,7 +1,7 @@
 {
   "name": "skill-library",
   "description": "Prostrive base skills: small, mostly on demand, reworked from mattpocock/skills and backnotprop/pstack",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": {
     "name": "Prostrive"
   },

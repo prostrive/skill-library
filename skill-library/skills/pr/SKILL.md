@@ -17,6 +17,9 @@ Use this template for the PR body:
 
 - **Before:** <screenshot, output or failing test run>
   **After:** <screenshot, output or passing test run>
+- **Checked in the app:** <what verify checked>. **Not checked:** <what it could not check>
+
+**Read yourself:** <files that match docs/agents/review.md, or "nothing beyond the evidence">
 
 ## Merge danger
 
@@ -72,10 +75,14 @@ Put each visual next to the line of text it supports. Keep only the calls, files
 
 ## Evidence
 
-Show that the change works, before and after.
+Show that the change works, before and after. The reviewer reads this section first, so it carries the proof, not the diff.
 - A screenshot is best when the change is visual and the environment allows it.
 - Execution evidence is next: the test that failed and now passes, or command output.
-- Say what you could not check.
+- Copy the two lists from the last `verify` report: what it checked in the running app and what it could not check. No `verify` run yet: run it first.
+
+## Read yourself
+
+List the changed files that match the "Read yourself" paths in `docs/agents/review.md`, each with its reason. No file matches: write "nothing beyond the evidence". This tells the human reviewer where to read the code line by line.
 
 ## Merge danger
 
