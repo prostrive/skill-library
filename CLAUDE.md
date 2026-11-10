@@ -1,51 +1,57 @@
-# Claude Toolkit
+# skill-library
 
-A Claude Code plugin marketplace. Registers `superpowers-lite` (a fork of [obra/superpowers](https://github.com/obra/superpowers) with a developer-picked fast/middle/full lane so each task gets right-sized planning ceremony) and `superpowers-lite-teams` (the same plugin with Agent Teams parallel execution enabled by default on the full lane).
+A Claude Code plugin marketplace with one plugin, `skill-library`: the base skills for Prostrive projects. Projects add their own skills on top. They never edit a base skill.
 
-## Structure
+## Layout
 
-- `.claude-plugin/marketplace.json` — marketplace manifest
-- `superpowers-lite/` — registered plugin (the active superpowers fork)
-- `superpowers-lite-teams/` — registered plugin (superpowers-lite + Agent Teams on the full lane, ports [narwhalishus/superpowered-teams](https://github.com/narwhalishus/superpowered-teams))
+- `.claude-plugin/marketplace.json`: the marketplace manifest.
+- `skill-library/.claude-plugin/plugin.json`: the plugin manifest. Bump `version` (0.x) in every PR that changes a skill.
+- `skill-library/skills/<name>/SKILL.md`: one folder per skill. Long detail goes in `skill-library/skills/<name>/references/*.md`.
+- `skill-library/agents/*.md`: subagents that skills start.
+- `scripts/check-skills.sh`: the CI check. Run it before you open a PR.
+- `scripts/mine-transcripts.py`: reads a dev's local Claude Code transcripts and counts skill use and friction. Used to decide the pilot questions.
 
+## How to write a skill
 
-## Plugin: superpowers-lite
+These rules apply to every file under `skill-library/`. `scripts/check-skills.sh` enforces the ones a script can check.
 
-Fork of `obra/superpowers`. Same skills, same SessionStart-hook injection model, plus a **three-lane decision** in `using-superpowers`. The developer picks the lane via AskUserQuestion at the start of each task — the AI does not classify:
+**Frontmatter.**
+- `name` matches the folder name.
+- `description` is one or two sentences.
+- A skill that only runs when a dev types `/name` has `disable-model-invocation: true`. Its description says what it does.
+- A skill that Claude may load by itself has no such line. Its description says what it does, then `Use when <one concrete trigger>.` One trigger, described as something Claude can see in the work.
+- Never write `MUST`, `always`, `even if`, `1%`, `not optional` or `not negotiable` in a description. That pattern made the old plugin fire on everything.
 
-- **Full lane** — bit-for-bit upstream behavior: design-first brainstorm + spec doc + full plan doc + per-task two-stage subagent review. Use for new dependencies, new infra, real architectural decisions, post-launch breaking changes, RFC-class work.
-- **Middle lane** — short committed plan doc, no brainstorm/spec, optional implementer subagent, single combined reviewer pass at end. Use for medium refactors, multi-file bug fixes, features that slot into existing patterns, internal API changes, dep upgrades, perf fixes, pre-launch schema/API changes.
-- **Fast lane** — mini-brainstorm, TodoWrite plan, inline implementation, no subagents. Use for ≤~4-file self-contained changes (copy, styling, single-function fix, config flip).
+**Body.**
+- Under 120 lines. Move detail to `references/`.
+- Plain English. Active voice. Short sentences. One instruction per sentence. No marketing words.
+- Say what to do, not why the skill exists.
+- No ceremony: no lane questions, no sign-off quizzes, no committed plan or spec docs. The tracker ticket is the spec.
+- A skill that asks the dev questions asks at most 3 at a time, and only questions the code, the tracker or the docs cannot answer.
+- Start subagents with a fresh context, not a fork. Parallel subagents each get their own git worktree and their own browser profile.
 
-All three lanes keep TDD and verification-before-completion mandatory. Lane reclassification mid-task goes back through AskUserQuestion.
+**Generic only.** This repo is public.
+- No client names, project names, people, ticket IDs, URLs of private systems or absolute paths.
+- Project facts come from files in the project repo. A skill names the file it reads and works when the file is missing.
 
-## Plugin: superpowers-lite-teams
+**Credit.** Most skills are reworked from MIT-licensed sources. The first line after the frontmatter is an HTML comment that names the source, for example `<!-- Based on mattpocock/skills: skills/engineering/tdd (MIT) -->`. `THIRD_PARTY_NOTICES.md` holds the licenses.
 
-Same as `superpowers-lite`, with two skills and one agent ported from [narwhalishus/superpowered-teams](https://github.com/narwhalishus/superpowered-teams) (MIT) and wired into the full lane by default.
+## Project files the skills read
 
-### What's added on top of superpowers-lite
+A project extends the base with these files. Every one is optional.
 
-- **Skill `writing-plans-for-teams`** — runs a four-criterion fitness check on the spec (≥4 tasks, ≥2 waves with ≥2 tasks each, ≥2 distinct specialist roles, no pervasive shared state). On pass, writes a wave-structured team plan. On fail, hands off to `writing-plans` for serial flow.
-- **Skill `agent-team-driven-development`** — executes team-format plans by orchestrating 1–3 persistent specialist teammates in parallel waves, with two-stage review (spec compliance, then code quality) per task via one-shot reviewer subagents.
-- **Agent `code-reviewer`** — used by the team flow for code-quality and final cross-cutting review.
+| File | Read by | Holds |
+|---|---|---|
+| `AGENTS.md` | all | The repo conventions, written by `setup-repo` |
+| `GLOSSARY.md` | all | Domain words and the words to avoid |
+| `docs/decision-records/` | `domain-modeling`, `why`, `review` | ADRs |
+| `docs/agents/tracker.md` | `spec`, `triage`, `implement`, `review` | Issue tracker, team, statuses, labels |
+| `docs/agents/verify.md` | `verify` | How to start the app and sign in |
+| `features/` | `verify` | The feature map: one file per feature |
+| `docs/agents/review.md` | `review`, `pr` | Paths a person reads themselves, extra review checks, paths to skip |
+| `.claude/agents/<topic>.md` + `docs/topics/<topic>.md` | `ask` | Topic experts and their briefs |
+| `.claude/handoffs/` (gitignored) | `handoff`, `catch-up` | Handoff notes between sessions |
 
-### How it's wired
+## Releases
 
-The full-lane brainstorming terminal in this plugin's `brainstorming` skill invokes `writing-plans-for-teams` instead of `writing-plans`. The fitness check then either produces a team plan or falls back to the standard serial flow. Middle and fast lanes are unchanged.
-
-### Prerequisites
-
-- Claude Code ≥ 2.1.32
-- `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in `~/.claude/settings.json`
-
-Without the flag, the fitness check still runs and the serial fallback path works; only team execution itself requires the flag.
-
-### Status
-
-Experimental — kept side-by-side with `superpowers-lite` so the teams behavior can be tested without disrupting non-teams workflows. Don't install both into the same Claude Code instance; pick one.
-
-## Development
-
-To add a new command: create a `.md` file in `<plugin>/commands/`.
-To add a new skill: create a directory with `SKILL.md` in `<plugin>/skills/`.
-To add a new agent: create a `.md` file in `<plugin>/agents/`.
+Changes go through a PR. The maintainer reviews every PR. A project skill moves into the base only when 2 or more projects need it.
