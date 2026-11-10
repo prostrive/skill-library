@@ -1,0 +1,77 @@
+#!/bin/sh
+# Finds Java 17+, downloads tla2tools.jar once into the cache, then runs statechart.ts.
+set -e
+self=$0
+while [ -L "$self" ]; do
+  link=$(readlink "$self")
+  case $link in
+    /*) self=$link ;;
+    *) self=$(dirname "$self")/$link ;;
+  esac
+done
+entry=$(dirname "$self")/statechart.ts
+
+TLA_VERSION=1.7.4
+TLA_SHA256=936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88
+TLA_URL=https://github.com/tlaplus/tlaplus/releases/download/v$TLA_VERSION/tla2tools.jar
+MIN_JAVA_MAJOR=17
+
+java_major() {
+  "$1" -version 2>&1 | sed -n '1s/.*version "\([0-9]*\).*/\1/p'
+}
+
+find_java() {
+  for candidate in "${JAVA:-}" "$(command -v java 2>/dev/null)" "$(brew --prefix openjdk 2>/dev/null)/bin/java"; do
+    [ -n "$candidate" ] && [ -x "$candidate" ] || continue
+    major=$(java_major "$candidate")
+    [ "${major:-0}" -ge "$MIN_JAVA_MAJOR" ] 2>/dev/null && { echo "$candidate"; return 0; }
+  done
+  return 1
+}
+
+sha256_of() {
+  if command -v shasum >/dev/null; then shasum -a 256 "$1" | cut -d' ' -f1; else sha256sum "$1" | cut -d' ' -f1; fi
+}
+
+if [ -z "${TLA2TOOLS:-}" ]; then
+  cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/skill-library"
+  TLA2TOOLS="$cache_dir/tla2tools-$TLA_VERSION.jar"
+  if [ ! -f "$TLA2TOOLS" ]; then
+    mkdir -p "$cache_dir"
+    echo "Downloading tla2tools.jar $TLA_VERSION to $cache_dir" >&2
+    curl -fsSL "$TLA_URL" -o "$TLA2TOOLS.part"
+    if [ "$(sha256_of "$TLA2TOOLS.part")" != "$TLA_SHA256" ]; then
+      rm -f "$TLA2TOOLS.part"
+      echo "tla2tools.jar checksum does not match. Download stopped." >&2
+      exit 1
+    fi
+    mv "$TLA2TOOLS.part" "$TLA2TOOLS"
+  fi
+fi
+
+if ! JAVA=$(find_java); then
+  echo "statechart needs Java $MIN_JAVA_MAJOR or later. Install it with: brew install openjdk" >&2
+  echo "Or set JAVA to the path of a java binary." >&2
+  exit 127
+fi
+export TLA2TOOLS JAVA
+
+version() {
+  command -v "$1" >/dev/null || { echo 0; return; }
+  "$1" --version 2>/dev/null | sed -n '1s/[^0-9]*\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\).*/\1 \2 \3/p' | {
+    read -r major minor patch
+    echo $((${major:-0} * 1000000 + ${minor:-0} * 1000 + ${patch:-0}))
+  }
+}
+node=$(version node)
+if [ "$node" -ge 23006000 ] || { [ "$node" -ge 22018000 ] && [ "$node" -lt 23000000 ]; }; then
+  exec node --disable-warning=ExperimentalWarning "$entry" "$@"
+fi
+if [ "$(version bun)" -ge 1001005 ]; then
+  exec bun "$entry" "$@"
+fi
+if [ "$(version deno)" -ge 2000000 ]; then
+  exec deno run --quiet --no-prompt --allow-read --allow-write --allow-run --allow-env "$entry" "$@"
+fi
+echo "statechart needs Node 22.18 to 22.x, Node 23.6 or later, Bun 1.1.5 or later, or Deno 2.0 or later." >&2
+exit 127
