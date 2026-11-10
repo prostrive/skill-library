@@ -36,6 +36,7 @@ Default tracker: Linear. Propose GitHub Issues only when the repo has no Linear 
 Show the dev a short list of the files you will write or change. Then write them. Edit a file that exists in place. Keep every line the dev wrote that you did not replace.
 
 1. **`AGENTS.md`** from [references/agents-template.md](references/agents-template.md).
+   - Keep the Skills section as it is. Without it, Claude rarely loads a skill by itself.
    - Fill each section with what the repo already does. Use real paths, real script names and real examples from the code.
    - Delete a template rule the repo breaks on purpose. Do not invent a rule the code does not follow.
    - Mark each gap as `TODO(setup-repo): <what is missing>`, so the dev can find it.

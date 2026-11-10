@@ -9,6 +9,17 @@ Keep it short. Each line states a rule a person or an agent can follow. A rule t
 
 Read this before you write code here. It applies to people and to coding agents. Words come from [GLOSSARY.md](GLOSSARY.md).
 
+## Skills
+
+This repo uses the skill-library plugin. Load the matching skill before you start:
+
+- A bug, error, failing test or slowdown: `diagnose`.
+- How code works, or where new code belongs: `how`. Why code or a decision is the way it is: `why`.
+- Building a ticket or spec: `implement`. Turning a plan into tickets: `spec`.
+- Before you say an app change is done: `verify`.
+- Reviewing a PR or diff: `review`. Writing a PR body: `pr`.
+- A question about a topic that has an expert in `.claude/agents/`: `ask`.
+
 ## Words
 
 - Code uses the glossary words: `<term>`, `<term>`. Not `<avoided synonym>`.
