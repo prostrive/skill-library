@@ -45,7 +45,7 @@ Show the dev a short list of the files you will write or change. Then write them
 4. **`docs/agents/verify.md`**: a stub with the title "How to check a change in the running app" and one line: `Not set up yet. Run /verify setup.` Skip it if the file exists.
 5. **`GLOSSARY.md`**: create it only if it is missing. Use the format in the `domain-modeling` skill. Add the domain words you found in the code and the answers, each with an `_Avoid_` line when the code uses two words for one thing.
 6. **`.gitignore`**: add `.claude/handoffs/` if it is not there.
-7. **`docs/agents/review.md`**: create it only if it is missing, from the format in the `review` skill (`references/review-md.md`). Fill "Read yourself" with the real paths of the CI config, the migrations, the auth or permission code and any code that moves money. Delete a line the repo does not have.
+7. **`docs/agents/review.md`**: create it only if it is missing, from the format in the `review` skill (`references/review-md.md`). Fill "Read yourself" with the real paths of the CI config, the migrations and the auth or permission code. Add other paths only when the dev names them. Delete a line the repo does not have.
 8. **`.claude/settings.json`**: merge these keys. Keep every other key.
 
 ```json

@@ -50,7 +50,7 @@ Do not pass a finding straight through. Open the file and confirm each claim you
 
 - A BUG stays only if you can follow its failing sequence line by line in the PR head.
 - A standards item stays only if it cites a written rule or a sibling line. "This could be cleaner" is not a finding.
-- A divergence that the PR explains away still needs a check. Written down is not the same as agreed. A divergence with no recorded decision (ticket, ADR, spec) that changes money, permissions, deadlines, lockout or what a customer sees is `blocking, needs a decision`.
+- A divergence that the PR explains away still needs a check. Written down is not the same as agreed. A divergence with no recorded decision (ticket, ADR, spec) that changes what a user can do or sees is `blocking, needs a decision`.
 - If something is missing, check the tracker before you call it a gap. Name the ticket that covers it, or say no ticket covers it.
 - Check if each problem already exists on the base branch (`git show origin/<base>:<path>`, `git blame`). If it does, tag it `pre-existing`. A pre-existing problem never blocks this PR.
 - Name the whole class of a problem, not one line. Search the diff for every other place with the same problem and list them in the same comment, so the author fixes all of them in one round.
@@ -70,7 +70,7 @@ First line: `Approve`, `Approve after fixes` or `Block`, and the one reason.
 
 Second line: `Round <n> of 3, reviewed up to <short head sha>`.
 
-Then `Read yourself:` and the files in this diff that match the paths in `docs/agents/review.md`, each with the reason from that file. With no `review.md`, use these defaults: CI and deploy config, database migrations, auth and permission checks, and code that moves money. If no file matches, write `Read yourself: nothing beyond the evidence in the PR body`.
+Then `Read yourself:` and the files in this diff that match the paths in `docs/agents/review.md`, each with the reason from that file. With no `review.md`, use these defaults: CI and deploy config, database migrations, auth and permission checks. If no file matches, write `Read yourself: nothing beyond the evidence in the PR body`.
 
 Then the comments grouped by file, files in path order, lines ascending. Tag each comment `blocking`, `worth fixing` or `pre-existing` inline. No nits.
 

@@ -12,7 +12,6 @@ Paths where a person reads the diff, not only the evidence. One line each: a glo
 - `.github/workflows/**`: CI and deploy config
 - `<migrations path>/**`: database migrations cannot be rolled back cheaply
 - `<auth or permissions path>/**`: who can do what
-- `<money path>/**`: code that moves or calculates money
 
 ## Extra checks
 
