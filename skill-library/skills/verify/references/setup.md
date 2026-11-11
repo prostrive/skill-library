@@ -39,7 +39,7 @@ The driver is one script in the repo, for example `scripts/verify/<app>`, in the
 - `stop`: stops only what this worktree started, by the process ID it saved. Never by process name or port alone.
 - `info`: prints the URL, ports, data folder and browser profile of this worktree's instance.
 - `reset`: returns this instance to the baseline seed, so a state that shows only once (an empty list before the first item) can be driven again.
-- The drive helpers the feature map needs, for example `sign-in`, `seed`, `browser <action>` or `cli -- <command>`.
+- The drive helpers the feature map needs, for example `sign-in`, `seed`, `browser <action>` or `cli -- <command>`. `sign-in` covers every role that has its own surface, for example customer, admin and operator. A role the driver cannot sign in leaves its features out of the map.
 
 Rules:
 
