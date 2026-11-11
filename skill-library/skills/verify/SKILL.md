@@ -17,7 +17,8 @@ The project holds two things:
 ## Modes
 
 - `/verify` (default, and when this skill loads by itself): prove the current change.
-- `/verify setup`: write `docs/agents/verify.md` and seed `features/` for a repo that has neither. Follow `references/setup.md`.
+- `/verify setup`: write `docs/agents/verify.md`, a driver script when the app needs one, and seed `features/` for a repo that has none of them. Follow `references/setup.md`.
+- `/verify sweep`: check the whole app, not one change. Walk the sweep order in `features/README.md`, drive each feature's entry points, and end with `features/journeys.md`. Report one line per feature: passed, failed with evidence, or not reachable with the reason.
 - `/verify audit`: check that verify.md and the feature map still match the app. Follow `references/audit.md`.
 
 If `docs/agents/verify.md` is missing in default mode, say so. Then verify as well as the repo allows (its dev command, its existing e2e harness, curl for an API), and offer `/verify setup`. Do not invent a harness.
@@ -25,9 +26,9 @@ If `docs/agents/verify.md` is missing in default mode, say so. Then verify as we
 ## Default mode
 
 1. **Scope.** List the user-facing behavior the change touches. Find the matching files in `features/`. A change to a feature that has no file is a gap: say so, and verify it from the code anyway.
-2. **Launch.** Follow Launch in verify.md. Ready means usable, not only that a process answers. Never drive an instance you did not start, unless verify.md says the dev already runs a shared one.
+2. **Launch.** Follow Launch in verify.md. When verify.md names a driver, use its `start` and `doctor` commands. Ready means usable, not only that a process answers. Never drive an instance you did not start, unless verify.md says the dev already runs a shared one.
 3. **Doctor.** Run the Doctor check before the first drive and again after any drive that fails or surprises you.
-4. **Drive.** Follow the feature file's drive steps for every entry point the change can affect. Use the real user path: no internal setters, no test-only endpoints, no mocks except where production already has a boundary.
+4. **Drive.** Follow the feature file's drive steps for every entry point the change can affect. For each one, drive every state the change can touch: success, cancel, error, empty, and persistence (reload or read the value back a second way). Use the real user path: no internal setters, no test-only endpoints, no mocks except where production already has a boundary.
 5. **Evidence.** Capture the action and the resulting state, not only the final screen. Check side effects too: rows written, files created, messages sent. Store the evidence where verify.md says.
 6. **Cleanup.** Stop what you started. Never kill a process by name. Evidence survives cleanup. Check it is still there.
 7. **Report.** Two lists: what you checked, with the entry point and the evidence path for each, and what you could not check, with the reason. Say "done" only when the first list covers the change.

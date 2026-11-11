@@ -43,7 +43,16 @@ Each feature file starts with an H1 title and one paragraph describing the user-
 
 Keep implementation details out of the map. Name only user paths, stable handles, required state, commands, and observable proof.
 
+## Sweep order
+
+`/verify sweep` walks the features in this order, then ends with the journeys:
+
+1. [Create a note](./create-note.md)
+2. [Search notes](./search.md)
+3. [Journeys](./journeys.md)
+
 ## Features
 
 - [Create a note](./create-note.md) covers browser and CLI creation, cancellation, persistence, and cleanup.
 - [Search notes](./search.md) covers toolbar, keyboard, and CLI search with matching, empty, and clear states.
+- [Journeys](./journeys.md) covers flows that cross features, such as create then find.
