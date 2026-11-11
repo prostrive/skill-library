@@ -28,7 +28,7 @@ If `docs/agents/verify.md` is missing in default mode, say so. Then verify as we
 1. **Scope.** List the user-facing behavior the change touches. Find the matching files in `features/`. A change to a feature that has no file is a gap: say so, and verify it from the code anyway.
 2. **Launch.** Follow Launch in verify.md. When verify.md names a driver, use its `start` and `doctor` commands. Ready means usable, not only that a process answers. Never drive an instance you did not start, unless verify.md says the dev already runs a shared one.
 3. **Doctor.** Run the Doctor check before the first drive and again after any drive that fails or surprises you.
-4. **Drive.** Follow the feature file's drive steps for every entry point the change can affect. For each one, drive every state the change can touch: success, cancel, error, empty, and persistence (reload or read the value back a second way). Use the real user path: no internal setters, no test-only endpoints, no mocks except where production already has a boundary.
+4. **Drive.** Follow the feature file's drive steps for every entry point the change can affect. For each one, drive every state the change can touch: success, cancel, error, empty, and persistence (reload or read the value back a second way). Drive a state that shows only once, such as an empty list, first, or `reset` before it. Use the real user path: no internal setters, no test-only endpoints, no mocks except where production already has a boundary. A precondition that only another role can create, such as an admin setting, goes through that role's real path (its UI or API), never through a direct database write.
 5. **Evidence.** Capture the action and the resulting state, not only the final screen. Check side effects too: rows written, files created, messages sent. Store the evidence where verify.md says.
 6. **Cleanup.** Stop what you started. Never kill a process by name. Evidence survives cleanup. Check it is still there.
 7. **Report.** Two lists: what you checked, with the entry point and the evidence path for each, and what you could not check, with the reason. Say "done" only when the first list covers the change.
@@ -37,7 +37,7 @@ If `docs/agents/verify.md` is missing in default mode, say so. Then verify as we
 
 The run fails, and you report it as failed, when:
 
-- You weakened a drive step or an expected result to make it pass. A missing precondition is a failure, and its reason goes in the feature's `Gotchas`.
+- You weakened a drive step or an expected result to make it pass. A missing precondition is a failure, and its reason goes in the feature's `Gotchas`. Changing an expectation is a correction, not a weakening, only when the feature file was wrong about the product and you record the proof (code, ticket or decision) in `Gotchas`.
 - You proved fewer entry points than the feature file lists for the behavior you changed.
 - You report a skipped entry point as verified through a different path.
 - The only proof is a test run, a log line or an agent's word that you did not check against the real app.

@@ -17,6 +17,7 @@ This directory is the maintained source for verifying the user-facing behavior o
 
 - Start every recipe from the baseline state unless its preconditions say otherwise.
 - Prefer ARIA roles and accessible names over CSS selectors or DOM position.
+- Wait for a visible element or a response, never for "network idle". A page with a live stream never goes idle.
 - Treat every command as literal. Keep quoted names and flags unchanged.
 - Run browser actions through `control-notes browser`.
 - Run terminal actions through `control-notes cli -- <command>`.
