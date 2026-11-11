@@ -39,7 +39,7 @@ The description of an auto-load skill sits in context every turn. It decides whe
 
 Plain English. Active voice. One instruction per sentence. Short words. The real names of files, commands and flags. No marketing words. Do not explain why the document exists. Say what to do.
 
-Questions to the dev: at most 3 at a time, and only what the code, the tracker or the docs cannot answer.
+Questions to the dev: follow `grill/references/asking.md` (the `AskUserQuestion` dialog, up to 4 per round, one decision each), and only what the code, the tracker or the docs cannot answer.
 
 ## After you write
 

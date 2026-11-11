@@ -14,6 +14,10 @@ Build the work in a ticket or spec. Do not write a plan doc. The ticket is the s
 2. Read `AGENTS.md`, `GLOSSARY.md` and the decision records in the area you touch.
 3. Find the nearest similar code in the repo and copy its patterns.
 
+## Decisions the ticket does not cover
+
+Build only what the ticket decides. When the code needs a choice the ticket leaves open and a user or another system can see it (who may do it, what the user sees, an error code, a limit, a default, a data shape), do not pick one. Collect these choices, then ask them in one round of up to 4 with `AskUserQuestion`, following [the asking rules of the `grill` skill](../grill/references/asking.md). Choices nobody outside the code can see, such as names and helper structure, follow the nearest similar code and need no question.
+
 ## One ticket: the test loop
 
 Work one acceptance criterion at a time:
@@ -53,3 +57,4 @@ Keep exploration notes outside the repo.
 - The tests you added, the failure each one showed before the fix, and the passing run after.
 - What you checked in the real app, and what you could not check.
 - Anything you left out, and why.
+- Every choice you made that the ticket did not cover, with its source.

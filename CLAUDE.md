@@ -27,7 +27,7 @@ These rules apply to every file under `skill-library/`. `scripts/check-skills.sh
 - Plain English. Active voice. Short sentences. One instruction per sentence. No marketing words.
 - Say what to do, not why the skill exists.
 - No ceremony: no lane questions, no sign-off quizzes, no committed plan or spec docs. The tracker ticket is the spec.
-- A skill that asks the dev questions asks at most 3 at a time, and only questions the code, the tracker or the docs cannot answer.
+- A skill that asks the dev questions follows `skill-library/skills/grill/references/asking.md`: the `AskUserQuestion` dialog, up to 4 questions per round, one decision per question, and only questions the code, the tracker or the docs cannot answer.
 - Start subagents with a fresh context, not a fork. Parallel subagents each get their own git worktree and their own browser profile.
 
 **Generic only.** This repo is public.
