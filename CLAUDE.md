@@ -49,6 +49,7 @@ A project extends the base with these files. Every one is optional.
 | `docs/agents/verify.md` | `verify` | How to start the app and sign in |
 | `features/` | `verify` | The feature map: one file per feature |
 | `docs/agents/review.md` | `review`, `pr` | Paths a person reads themselves, extra review checks, paths to skip |
+| `docs/agents/deploy.md` | `babysit` | Environments, deploy workflows, how to see a commit is live |
 | `.claude/agents/<topic>.md` + `docs/topics/<topic>.md` | `ask` | Topic experts and their briefs |
 | `.claude/handoffs/` (gitignored) | `handoff`, `catch-up` | Handoff notes between sessions |
 

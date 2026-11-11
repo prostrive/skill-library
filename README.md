@@ -47,6 +47,7 @@ Slash-only skills run only when you type `/name`. Auto skills also load by thems
 | `wait-what` | slash-only | Says the last message again, with more context and plainer words |
 | `handoff` | slash-only | Writes a handoff note so a new session can continue the work |
 | `reflect` | slash-only | Reviews the session and turns each lesson into an edit of a skill |
+| `babysit` | slash-only | Drives PRs to merge-ready (conflicts, review comments, CI); with `land`, merges them one at a time and follows the deploy |
 | `verify` | auto | Drives the real app to prove a change works before it is called done |
 | `diagnose` | auto | Finds the root cause of a bug, error or failing test |
 | `implement` | auto | Builds a ticket test-first |
