@@ -35,7 +35,7 @@ When the dev asks a question in plain words and an expert's topic clearly matche
 ## `/ask new <topic>`: create an expert
 
 1. Use a short kebab-case topic name.
-2. Ask the dev at most 3 questions, only what the code, the tracker and the docs cannot answer:
+2. Ask the dev, in one `AskUserQuestion` round, only what the code, the tracker and the docs cannot answer:
    - What does this topic cover, and what is out of it?
    - Where does its truth live: code folders, tracker project or label, docs?
    - What has already been decided?

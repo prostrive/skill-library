@@ -35,7 +35,7 @@ Group the tickets by cause or by area, for example "these 8 come from one filter
 
 ## 5. Ask the dev
 
-List what is unclear per ticket. Ask at most 3 questions at a time. Recommend an answer for each question. Do not ask what the code or the tracker can answer.
+List what is unclear per ticket. Ask in rounds of up to 4 with `AskUserQuestion`, following [the asking rules of the `grill` skill](../grill/references/asking.md). Do not ask what the code or the tracker can answer.
 
 The dev decides:
 

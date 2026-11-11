@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 # Set up a repo
 
-Write the files the other skills read. Detect every fact you can from the repo. Ask the dev only for facts you cannot detect, at most 3 questions in one go.
+Write the files the other skills read. Detect every fact you can from the repo. Ask the dev only for facts you cannot detect, in one `AskUserQuestion` round of up to 4 questions.
 
 ## 1. Read the repo
 
@@ -27,7 +27,7 @@ Read what exists. Assume nothing.
 
 ## 2. Ask what you could not detect
 
-Typical gaps: the issue tracker and its team key, the domain words, rules that live only in people's heads. Ask in one message, max 3 questions. Give your best guess with each question, so the dev can answer "yes".
+Typical gaps: the issue tracker and its team key, the domain words, rules that live only in people's heads. Ask them in one `AskUserQuestion` round of up to 4 questions, with your best guess as the first option.
 
 Default tracker: Linear. Propose GitHub Issues only when the repo has no Linear branch names and uses GitHub Issues.
 
