@@ -1,0 +1,109 @@
+#!/usr/bin/env python3
+"""Report a merge verdict per PR from GitHub, and poll until each is no longer WAITING.
+
+Usage: watch-pr [--once] [--interval SECONDS] [--repo OWNER/REPO] PR [PR ...]
+Prints one JSON object per PR per poll. Exit 0 when every PR is READY or MERGED,
+1 when any PR is BLOCKED, 2 on a usage or gh error.
+"""
+import argparse
+import json
+import re
+import subprocess
+import sys
+import time
+
+DEFAULT_INTERVAL_SECONDS = 60
+FAILED_STATES = {"FAILURE", "ERROR", "CANCELLED", "TIMED_OUT", "ACTION_REQUIRED", "STARTUP_FAILURE"}
+APPROVAL_CHECK_PATTERN = re.compile(r"approv", re.IGNORECASE)
+PENDING_STATES = {"PENDING", "QUEUED", "IN_PROGRESS", "EXPECTED", "WAITING", "REQUESTED"}
+
+THREADS_QUERY = """
+query($owner:String!,$name:String!,$number:Int!){repository(owner:$owner,name:$name){
+pullRequest(number:$number){reviewThreads(first:100){nodes{isResolved isOutdated}}}}}"""
+
+
+def run_gh(args):
+    result = subprocess.run(["gh", *args], capture_output=True, text=True)
+    if result.returncode != 0:
+        raise RuntimeError(result.stderr.strip() or "gh failed")
+    return result.stdout
+
+
+def check_state(check):
+    return (check.get("conclusion") or check.get("state") or check.get("status") or "").upper()
+
+
+def verdict_for(pr, repo):
+    fields = "number,title,state,isDraft,mergeable,mergeStateStatus,reviewDecision,statusCheckRollup,headRefOid,baseRefName,url"
+    args = ["pr", "view", str(pr), "--json", fields] + (["--repo", repo] if repo else [])
+    data = json.loads(run_gh(args))
+    owner, name = (repo or json.loads(run_gh(["repo", "view", "--json", "nameWithOwner"]))["nameWithOwner"]).split("/")
+    threads = json.loads(run_gh(["api", "graphql", "-f", f"query={THREADS_QUERY}", "-F", f"owner={owner}",
+                                 "-F", f"name={name}", "-F", f"number={data['number']}"]))
+    nodes = threads["data"]["repository"]["pullRequest"]["reviewThreads"]["nodes"]
+    unresolved = sum(1 for node in nodes if not node["isResolved"] and not node["isOutdated"])
+
+    checks = data.get("statusCheckRollup") or []
+    failed_all = {c.get("name") or c.get("context") or "" for c in checks if check_state(c) in FAILED_STATES}
+    approval_checks = sorted(name for name in failed_all if APPROVAL_CHECK_PATTERN.search(name))
+    failed = sorted(failed_all - set(approval_checks))
+    pending = sorted({c.get("name") or c.get("context") for c in checks if check_state(c) in PENDING_STATES})
+
+    report = {"pr": data["number"], "url": data["url"], "head": data["headRefOid"][:10], "base": data["baseRefName"],
+              "failedChecks": failed, "approvalChecks": approval_checks, "pendingChecks": pending, "unresolvedThreads": unresolved,
+              "review": data.get("reviewDecision") or "NONE", "mergeState": data.get("mergeStateStatus")}
+
+    if data["state"] == "MERGED":
+        return {**report, "verdict": "MERGED", "reason": "merged"}
+    if data["state"] == "CLOSED":
+        return {**report, "verdict": "BLOCKED", "reason": "closed"}
+    if data.get("isDraft"):
+        return {**report, "verdict": "BLOCKED", "reason": "draft"}
+    if data.get("mergeable") == "CONFLICTING" or data.get("mergeStateStatus") == "DIRTY":
+        return {**report, "verdict": "BLOCKED", "reason": "conflict"}
+    if failed:
+        return {**report, "verdict": "BLOCKED", "reason": "checks-failed"}
+    if data.get("reviewDecision") == "CHANGES_REQUESTED":
+        return {**report, "verdict": "BLOCKED", "reason": "changes-requested"}
+    if unresolved:
+        return {**report, "verdict": "BLOCKED", "reason": "unresolved-threads"}
+    if pending or data.get("mergeable") == "UNKNOWN":
+        return {**report, "verdict": "WAITING", "reason": "checks-pending" if pending else "mergeability-unknown"}
+    if data.get("mergeStateStatus") == "BEHIND":
+        return {**report, "verdict": "BLOCKED", "reason": "behind-base"}
+    if approval_checks or data.get("reviewDecision") == "REVIEW_REQUIRED" or data.get("mergeStateStatus") == "BLOCKED":
+        return {**report, "verdict": "WAITING", "reason": "needs-human-approval"}
+    return {**report, "verdict": "READY", "reason": "mergeable"}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("prs", nargs="+")
+    parser.add_argument("--once", action="store_true", help="one status pass, no polling")
+    parser.add_argument("--interval", type=int, default=DEFAULT_INTERVAL_SECONDS)
+    parser.add_argument("--repo")
+    args = parser.parse_args()
+
+    open_prs = list(args.prs)
+    any_blocked = False
+    while open_prs:
+        still_waiting = []
+        for pr in open_prs:
+            try:
+                report = verdict_for(pr, args.repo)
+            except (RuntimeError, KeyError, json.JSONDecodeError) as error:
+                print(json.dumps({"pr": pr, "verdict": "ERROR", "reason": str(error)}), flush=True)
+                return 2
+            print(json.dumps(report), flush=True)
+            if report["verdict"] == "WAITING" and report["reason"] != "needs-human-approval":
+                still_waiting.append(pr)
+            any_blocked = any_blocked or report["verdict"] == "BLOCKED"
+        if args.once or not still_waiting:
+            break
+        open_prs = still_waiting
+        time.sleep(args.interval)
+    return 1 if any_blocked else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

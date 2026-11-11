@@ -46,7 +46,8 @@ Show the dev a short list of the files you will write or change. Then write them
 5. **`GLOSSARY.md`**: create it only if it is missing. Use the format in the `domain-modeling` skill. Add the domain words you found in the code and the answers, each with an `_Avoid_` line when the code uses two words for one thing.
 6. **`.gitignore`**: add `.claude/handoffs/` if it is not there.
 7. **`docs/agents/review.md`**: create it only if it is missing, from the format in the `review` skill (`references/review-md.md`). Fill "Read yourself" with the real paths of the CI config, the migrations and the auth or permission code. Add other paths only when the dev names them. Delete a line the repo does not have.
-8. **`.claude/settings.json`**: merge these keys. Keep every other key.
+8. **`docs/agents/deploy.md`**: create it only if the repo has a deploy workflow and the file is missing, from the format in the `babysit` skill (`references/deploy-md.md`). Fill in the environments, the workflows and how to see that a commit is live.
+9. **`.claude/settings.json`**: merge these keys. Keep every other key.
 
 ```json
 {
@@ -63,7 +64,7 @@ Show the dev a short list of the files you will write or change. Then write them
 
 A dev who opens the repo then gets a prompt to install the plugin.
 
-**Done when** each of the 8 items is written or was already correct, and `.claude/settings.json` parses as JSON.
+**Done when** each of the 9 items is written or was already correct, and `.claude/settings.json` parses as JSON.
 
 ## 4. Report
 
