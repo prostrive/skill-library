@@ -30,7 +30,7 @@ If `docs/agents/verify.md` is missing in default mode, say so, and check if anot
 3. **Doctor.** Run the Doctor check before the first drive and again after any drive that fails or surprises you.
 4. **Drive.** Follow the feature file's drive steps for every entry point the change can affect. For each one, drive every state the change can touch: success, cancel, error, empty, and persistence (reload or read the value back a second way). Drive a state that shows only once, such as an empty list, first, or `reset` before it. An entry point counts as driven when you reached it the way a user does, checked that the final URL or screen is the one you meant (a redirect can land you elsewhere), and ran its main action. Opening a page alone is not enough. Use the real user path: no internal setters, no test-only endpoints, no mocks except where production already has a boundary. A precondition that only another role can create, such as an admin setting, goes through that role's real path (its UI or API), never through a direct database write.
 5. **Evidence.** Capture the action and the resulting state, not only the final screen. Check side effects too: rows written, files created, messages sent. Store the evidence where verify.md says.
-6. **Cleanup.** Stop what you started. Never kill a process by name. Evidence survives cleanup. Check it is still there.
+6. **Cleanup.** Cleanup is part of the run, never a task for the dev. Before Launch, write down in the evidence folder everything you start: container project names, networks, volumes, process IDs, worktrees. At the end, and also when a step fails or you stop early, remove every item on that list, then check that none is left. Something the run created by mistake, even inside another project, is on the list too: check its creation time, then remove it. When a cleanup command needs the dev's permission, ask for it in the run. Never kill a process by name. Evidence survives cleanup. Check it is still there.
 7. **Report.** Use the report format below. Say "works" only when the checked list covers the change.
 
 ## Report format
@@ -54,7 +54,7 @@ Keep these out of the report:
 
 - Your own failed attempts, for example a request you built wrong. Retry them. They are not results.
 - Setup trouble, for example a missing env var or config value. Fix it in `docs/agents/verify.md` or the feature's `Gotchas`, and add one line: "Updated Gotchas in <file>".
-- Cleanup steps for the dev. Stop what you started yourself, before you report.
+- Cleanup steps for the dev. A report that asks the dev to clean up is a failed cleanup: go back and finish it.
 - Internal IDs and raw payloads. Put them in the evidence folder.
 
 ## Fail conditions

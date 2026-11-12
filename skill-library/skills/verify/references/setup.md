@@ -36,7 +36,7 @@ The driver is one script in the repo, for example `scripts/verify/<app>`, in the
 
 - `start`: starts this worktree's instance and waits until it is usable.
 - `doctor`: read-only. Reports who owns the port (process and folder), whether that instance belongs to this worktree, the commit it runs, and the health of each shared service.
-- `stop`: stops only what this worktree started, by the process ID it saved. Never by process name or port alone.
+- `stop`: removes everything this worktree started: processes by their saved ID, and containers, networks and volumes by this worktree's project name. `start` writes those into a ledger file, and `stop` works from that file. Running `stop` twice is safe. Never stop by process name or port alone.
 - `info`: prints the URL, ports, data folder and browser profile of this worktree's instance.
 - `reset`: returns this instance to the baseline seed, so a state that shows only once (an empty list before the first item) can be driven again.
 - The drive helpers the feature map needs, for example `sign-in`, `seed`, `browser <action>` or `cli -- <command>`. `sign-in` covers every role that has its own surface, for example customer, admin and operator. A role the driver cannot sign in leaves its features out of the map.
