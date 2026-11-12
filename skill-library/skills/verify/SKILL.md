@@ -21,7 +21,7 @@ The project holds two things:
 - `/verify sweep`: check the whole app, not one change. Walk the sweep order in `features/README.md`, drive each feature's entry points, and end with `features/journeys.md`. Report one line per feature: passed, failed with evidence, or not reachable with the reason.
 - `/verify audit`: check that verify.md and the feature map still match the app. Follow `references/audit.md`.
 
-If `docs/agents/verify.md` is missing in default mode, say so. Then verify as well as the repo allows (its dev command, its existing e2e harness, curl for an API), and offer `/verify setup`. Do not invent a harness.
+If `docs/agents/verify.md` is missing in default mode, say so, and check if another branch has it (for example the default branch). Then verify only with what cannot touch the dev's own stack: tests, type checks, a harness that starts its own isolated copy, or requests to an instance the dev names. Never start, reset or seed a stack with the repo's normal dev commands: they often share fixed ports, data and container names with the dev's running stack. Offer `/verify setup`. Do not invent a harness.
 
 ## Default mode
 
@@ -50,4 +50,4 @@ When a change adds or moves a user-facing entry point, update its feature file i
 
 ## Parallel runs
 
-Two runs never share an instance, a data directory or a browser profile. If verify.md says the app cannot run twice side by side, run the verifications one after another.
+Two runs never share an instance, a data directory or a browser profile. Every container command sets its own project name, derived from the worktree path. Never rely on the folder name: a worktree folder can have the same name as the main checkout. If verify.md says the app cannot run twice side by side, run the verifications one after another.
