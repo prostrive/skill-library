@@ -35,6 +35,8 @@ Work in a separate worktree per PR, never in the dev's checkout. Fix blockers in
    - A failure in code the PR does not touch: check for a stale base (`git merge-base --is-ancestor origin/<base> HEAD`). If the base moved, merge it in.
    - Flaky or infrastructure: rerun the failed jobs once (`gh run rerun <run> --failed`). The same failure twice is not flaky. Read the logs and treat it as a real failure.
 
+4. **Verify.** When CI is green on a change a user can see, run `/verify pr <number>`. A `FAIL` is a blocker: fix it like a CI failure, push, and verify again.
+
 Never change code just to quiet a bot. Never touch a PR's base or stack order.
 
 ## Land
@@ -43,7 +45,7 @@ Only in `land` mode, or after the dev explicitly asks to merge.
 
 1. **Order.** Merge PRs that others depend on first. Otherwise the oldest first. One merge at a time, never two in parallel.
 2. **Ordered files.** If the repo numbers migrations or other ordered files, compare the PR's numbers with the base branch as it is now, before each merge. On a collision, renumber on the PR branch, push, and wait for green again. Check again after every merge, because each merge moves the base.
-3. **Verify first.** For a change a user can see, run the `verify` skill on the PR head before the merge. A failed verify blocks the merge.
+3. **Verify first.** For a change a user can see, find the newest `Verify:` comment on the PR. It must name the current head commit. If it is missing or names an older commit, run `/verify pr <number>` and wait for its verdict. `FAIL` blocks the merge. `PASS+NOTES` goes in your report.
 4. **Merge** with the method the repo uses (`AGENTS.md`, or the repo's allowed merge methods). Then read the PR back: it must say merged, into the right base. A merge queue that accepted the PR has not merged it yet. Wait.
 5. **Re-check the rest.** After each merge, run the watcher on the remaining PRs. They may now conflict or be behind.
 6. **Follow the deploy.** Read `docs/agents/deploy.md` (format in [references/deploy-md.md](references/deploy-md.md)). Watch the deploy it names until the merged commit is live on the target environment, then run the checks it lists, or `verify` against that environment when it says how. Without `deploy.md`, stop at merged and say so.

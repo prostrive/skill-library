@@ -29,7 +29,7 @@ Edit only `docs/agents/verify.md`, `features/` and the helper scripts verify.md 
    - Evidence captured so far survives every cleanup. Check it at its location.
    - Nothing a drive started outlives its use. Clean up after failed attempts too. On a shared instance, clean up what you left, not the instance.
 
-   A Doctor failure caused by drift is drift: fix it, restart only what the fix invalidated, and retry once before you call the pass blocked. A feature you cannot reach is `verified-unreachable` only with the exact prerequisite (sign-in, entitlement, OS, external state) and the route you tried. If the map does not mention that prerequisite, that is drift too. Drive every harness fix live again before it ships.
+   A Doctor failure caused by drift is drift: fix it, restart only what the fix invalidated, and retry once before you call the pass blocked. A feature you cannot reach is `verified-unreachable` only with the exact prerequisite (sign-in, entitlement, OS, external state) and the route you tried. If the map does not mention that prerequisite, that is drift too. Drive every harness fix live again before it ships. A changed expected result follows the see-it-fail rule in `SKILL.md`.
 6. **Ship or stop.** For `changed`, open one PR with proven fixes. Read every changed file again first. For `clean` or `blocked`, open no PR and report the outcome and the coverage.
 
 Keep short run notes (features covered, unreachable prerequisites, confirmed drift, outcome) in a scratch folder. Do not commit them.
