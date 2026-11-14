@@ -74,6 +74,7 @@ Rules:
 - Give each worktree its own instance. Derive the data folder, browser session and container project name from the worktree path. For ports, derive them too, or keep a runner that picks free ports itself and record the chosen ports for `info`.
 - Check the container runtime's shared resources as well: networks, address pools, volumes and name prefixes. Give each worktree its own network, and have `doctor` report when the runtime runs out of them.
 - Refuse to drive an instance this worktree did not start, unless the dev passes it on purpose.
+- `start` refuses to run when the ledger lists processes or containers that still run. Run `stop` first. A second `start` must never overwrite a live ledger.
 - Never restart or reset a shared service. `doctor` reports a broken shared service, and the run stops there.
 - Start the app with every live key from section 1 set to empty, or to a test key the project provides for that purpose. Never copy a live key from the dev's env file. Turn off the matching feature flags when the app has them. verify.md lists the blanked keys.
 - A flow that needs a blanked key is not checked. It goes in the feature's `Gotchas` with the key it needs. Never fake the outside service to make the flow pass.
