@@ -21,6 +21,8 @@ The project holds two things:
 - `/verify sweep`: check the whole app, not one change. Walk the sweep order in `features/README.md`, drive each feature's entry points, and end with `features/journeys.md`. Report one line per feature: passed, failed with evidence, or not reachable with the reason.
 - `/verify sweep staging`: the same sweep against the Staging part of verify.md, with no local stack. Follow its write policy. A step marked as a write stays not checked unless the policy allows it. Never run reset, seed or cleanup commands there. If verify.md has no Staging part, say so and stop.
 - `/verify audit`: check that verify.md and the feature map still match the app. Follow `references/audit.md`.
+- `/verify pr <number>`: start the `verifier` subagent with a fresh context and only the PR number. It checks the PR head in its own worktree and posts a `PASS`, `PASS+NOTES` or `FAIL` comment on the PR. The verdict covers one commit. A new push makes it old.
+- `/verify schedule`: set up scheduled audits and staging sweeps on an always-on machine. Follow `references/schedule.md`.
 
 If `docs/agents/verify.md` is missing in default mode, say so, and check if another branch has it (for example the default branch). Then verify only with what cannot touch the dev's own stack: tests, type checks, a harness that starts its own isolated copy, or requests to an instance the dev names. Never start, reset or seed a stack with the repo's normal dev commands: they often share fixed ports, data and container names with the dev's running stack. Offer `/verify setup`. Do not invent a harness.
 
@@ -66,12 +68,13 @@ The run fails, and you report it as failed, when:
 - You proved fewer entry points than the feature file lists for the behavior you changed.
 - You report a skipped entry point as verified through a different path.
 - The only proof is a test run, a log line or an agent's word that you did not check against the real app.
+- You trust a new or changed expected result that you never saw fail. See it fail once first: drive it on the base branch, or with the change reverted, and watch it fail. When it cannot fail there (the behavior is not new), break its precondition on purpose and watch it fail. Write how you saw it fail in the evidence.
 
 When a check fails, suspect how you observed it before you suspect the app. Then rerun once. If it still fails, report the failure with the steps and the evidence. Do not change product code in the same breath to make the check pass.
 
 ## Update the map
 
-When a change adds or moves a user-facing entry point, update its feature file in the same PR. Keep implementation details out of the map: user paths, stable handles (ARIA names, routes, CLI flags), required state, and observable proof only.
+When a change adds or moves a user-facing entry point, update its feature file in the same PR. A new expected result follows the see-it-fail rule above. Keep implementation details out of the map: user paths, stable handles (ARIA names, routes, CLI flags), required state, and observable proof only.
 
 ## Parallel runs
 
