@@ -46,7 +46,7 @@ A project extends the base with these files. Every one is optional.
 | `GLOSSARY.md` | all | Domain words and the words to avoid |
 | `docs/decision-records/` | `domain-modeling`, `why`, `review` | ADRs |
 | `docs/agents/tracker.md` | `spec`, `triage`, `implement`, `review` | Issue tracker, team, statuses, labels |
-| `docs/agents/verify.md` | `verify` | How to start the app and sign in |
+| `docs/agents/verify.md` | `verify` | How to start the app, sign in, and what an agent may do on staging |
 | `features/` | `verify` | The feature map: one file per feature |
 | `docs/agents/review.md` | `review`, `pr` | Paths a person reads themselves, extra review checks, paths to skip |
 | `docs/agents/deploy.md` | `babysit` | Environments, deploy workflows, how to see a commit is live |

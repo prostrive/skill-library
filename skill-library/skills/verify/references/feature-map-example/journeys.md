@@ -14,7 +14,7 @@ Flows that cross several features. A sweep ends here, because a journey can brea
 
 Preconditions: baseline state.
 
-- **Create:** `control-notes browser click "New note"`, type the title `Journey check`, save. Expect the note in the list.
+- **Create:** (writes) `control-notes browser click "New note"`, type the title `Journey check`, save. Expect the note in the list.
 - **Find:** `control-notes cli -- notes search "Journey check"`. Expect one result with that title and exit code 0.
 
 ## Gotchas

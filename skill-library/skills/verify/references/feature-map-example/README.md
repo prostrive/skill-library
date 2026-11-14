@@ -22,6 +22,7 @@ This directory is the maintained source for verifying the user-facing behavior o
 - Run browser actions through `control-notes browser`.
 - Run terminal actions through `control-notes cli -- <command>`.
 - Restore seeded data after a mutation. Do not remove proof artifacts during cleanup.
+- A step that changes stored data starts with `(writes)`. A staging sweep skips it unless the staging write policy in `docs/agents/verify.md` allows it.
 
 ## Proof and skip reporting
 

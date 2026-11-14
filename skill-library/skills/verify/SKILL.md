@@ -19,6 +19,7 @@ The project holds two things:
 - `/verify` (default, and when this skill loads by itself): prove the current change.
 - `/verify setup`: write `docs/agents/verify.md`, a driver script when the app needs one, and seed `features/` for a repo that has none of them. Follow `references/setup.md`.
 - `/verify sweep`: check the whole app, not one change. Walk the sweep order in `features/README.md`, drive each feature's entry points, and end with `features/journeys.md`. Report one line per feature: passed, failed with evidence, or not reachable with the reason.
+- `/verify sweep staging`: the same sweep against the Staging part of verify.md, with no local stack. Follow its write policy. A step marked as a write stays not checked unless the policy allows it. Never run reset, seed or cleanup commands there. If verify.md has no Staging part, say so and stop.
 - `/verify audit`: check that verify.md and the feature map still match the app. Follow `references/audit.md`.
 
 If `docs/agents/verify.md` is missing in default mode, say so, and check if another branch has it (for example the default branch). Then verify only with what cannot touch the dev's own stack: tests, type checks, a harness that starts its own isolated copy, or requests to an instance the dev names. Never start, reset or seed a stack with the repo's normal dev commands: they often share fixed ports, data and container names with the dev's running stack. Offer `/verify setup`. Do not invent a harness.
@@ -43,7 +44,7 @@ Write for the dev, not for the next agent. Plain words, no emoji. In this order,
 **Checked** (evidence in <path>)
 - <behavior, in user words>: ok | broken
 
-**Not checked:** <what, and why, one line each>
+**Not checked:** <what, and why, one line each. A flow that needs a blanked live key names the key>
 
 **Product issues:** <what a user sees, and whether it is older than this change>
 
@@ -74,4 +75,4 @@ When a change adds or moves a user-facing entry point, update its feature file i
 
 ## Parallel runs
 
-Two runs never share an instance, a data directory or a browser profile. Every container command sets its own project name, derived from the worktree path. Never rely on the folder name: a worktree folder can have the same name as the main checkout. If verify.md says the app cannot run twice side by side, run the verifications one after another.
+Two runs never share an instance, a data directory or a browser session. Never drive the dev's own browser or browser profile. Every container command sets its own project name, derived from the worktree path. Never rely on the folder name: a worktree folder can have the same name as the main checkout. If verify.md says the app cannot run twice side by side, run the verifications one after another.
