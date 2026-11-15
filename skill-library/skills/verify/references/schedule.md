@@ -37,12 +37,16 @@ A headless run cannot answer a sandbox prompt, so a blocked command fails. Write
     },
     "filesystem": {
       "allowWrite": ["<the folder that holds the runner's clone and worktrees>", "<the browser cache>"]
-    }
+    },
+    "excludedCommands": ["scripts/verify/<app> *", "./scripts/verify/<app> *"]
   }
 }
 ```
 
-Add the staging domains for `sweep-staging`, and the report channel's domain. `allowUnixSockets`, `allowLocalBinding` and `allowMachLookup` are macOS settings. Never turn the sandbox off for a scheduled run.
+- `excludedCommands` runs the driver outside the sandbox. Inside it, a later command cannot see or signal processes that an earlier command started, so `stop` and `doctor` fail. The agent must call the driver on its own, with no `cd`, pipe or redirect in the same call, or the call stays in the sandbox.
+- Add every host the app itself calls when it starts, for example a CDN that serves translations or fonts. Find them in one local `start` with the sandbox on: each blocked host shows in the sandbox report.
+- Add the staging domains for `sweep-staging`, and the report channel's domain.
+- `allowUnixSockets`, `allowLocalBinding` and `allowMachLookup` are macOS settings. Never turn the whole sandbox off for a scheduled run.
 
 ## 4. Write the runner
 
